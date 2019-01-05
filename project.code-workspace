@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"src/**/*.d.ts": true,
+			"src/**/*.map": true,
+			"src/**/*[^(test)].js": true
+		}
+	}
+}
