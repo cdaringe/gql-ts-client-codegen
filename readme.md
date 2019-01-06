@@ -1,5 +1,7 @@
 # gql-ts-client-codegen
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/cdaringe/gql-ts-client-codegen.svg)](https://greenkeeper.io/)
+
 autogenerate a typescript graphql client compatible with node & the browser
 
 ## warning - this package is WIP and non-functional
