@@ -1,13 +1,7 @@
 import { Food } from './__tests__/fixture/namespace'
-import { QueryResolver } from './__tests__/fixture/golden'
-import { fetchResovler } from './resovler'
 
 export type Unpacked<T> = T extends (infer U)[] ? U : T;
 
-/**
- * prototype of possible input format to client methods.
- * @see `client.foods(...)` below
- */
 export type QueryRequest<T> = {
   [P in keyof T]?:
     T[P] extends (any[] | null) ? QueryRequest<Unpacked<T[P]>> :
@@ -19,47 +13,31 @@ export type QueryRequest<T> = {
     QueryRequest<T[P]>;
 }
 
-/**
- * resultant payload type.  this type is currently BAD.
- * what we really need is each resolved GQL query to _reflect_
- * the `QueryRequest<T>` (or similar) that was passed to the
- * client method
- */
-export type MappedResultFood = Partial<Food.IFood>
-export type MappedResult<T> = T extends Food.IFood ? MappedResultFood : never;
-
-/**
- * gql client.  in the future state, all of this code will be generated.  in the
- * current state, i'm exploring what the shape should be, using hard coded _things_
- * to iterate/explore.
- * @param resolver user provided async mechanism to exec the GQL query
- */
-export const create = (resolver: QueryResolver) => {
-  const resolve: <R>(q: string) => Promise<R> = q => resolver.resolve(q)
-
-  const food: (fields: QueryRequest<Food.IFood>) => Promise<MappedResult<Food.IFood>> = async fields => {
-    return resolve(JSON.stringify(fields))
-  }
-  return {
-    food
-  }
+export type QueryResult<R, Q extends R> = {
+  [P in keyof R]:
+    R[P] extends boolean ? Q[P] : QueryResult<R[P], Q[P]>;
 }
 
 async function test () {
-  const client = create(fetchResovler)
-  const res = await client.food({
-    name: true,
-    type: true,
-    foodTypeByType: {
-      foodsByType: { // non-sensical query. just testing
-        nodes: {
-          name: true,
-          type: true
-        }
-      }
-    },
+  const createQueryGenerator = function <Q>() {
+    return function exec <P extends Q> (query: QueryRequest<P>) {
+      const res: QueryResult<QueryRequest<P>, Q> = { allFoods: [] } as any; // await execQuery(query)
+      return res
+    }
+  }
+
+  const execQuery = createQueryGenerator<Food.IQuery>()
+  const res = execQuery({
+    nodeId: true,
+    node: {
+      __typename: true,
+      id: true
+    }
   })
-  console.log(res.name) // PASS - should compile
-  console.log(res.nodeId) // FAIL - should not compile. res.nodeId was not present in query
+  res.allFoodTypes // compiles, when it shouldn't :(
+  res.bananas // fails, as it should :)
+  // ^ res is of type QueryResult<QueryRequest<P>, Food.IQuery>
+  // NOT of type QueryResult<QueryRequest<INFERRED_TYPE>, Food.IQuery>,
+  // making it seem like all keys are valid
 }
 test()

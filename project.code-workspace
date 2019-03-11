@@ -1,14 +1,15 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"files.exclude": {
-			"src/**/*.d.ts": true,
-			"src/**/*.map": true,
-			"src/**/*[^(test)].js": true
-		}
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "src/**/*.d.ts": true,
+      "src/**/*.map": true,
+      "src/**/*[^(test)].js": true
+    },
+    "typescript.tsdk": "./node_modules/typescript/lib"
+  }
 }

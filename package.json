@@ -42,7 +42,7 @@
     "postgraphile": "^4.1.0",
     "postgraphile-upsert-plugin": "^1.0.4",
     "prettier-standard": "^8.0.1",
-    "typescript": "^3.2.2"
+    "typescript": "next"
   },
   "ava": {
     "babel": false,
